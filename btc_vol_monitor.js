@@ -8,10 +8,10 @@ var twitter = require('twit');
 // Configure twitter authentication keys
 var fs = require('fs');
 var tkeys = fs.readFileSync('.t2keys').toString().split("\n");
-var T = new twitter({consumer_key:tkeys[0],consumer_secret:tkeys[1], access_token:tkeys[2],access_token_secret:tkeys[3]});
+var T = new twitter({consumer_key:tkeys[0],consumer_secret:tkeys[1],access_token:tkeys[2],access_token_secret:tkeys[3]});
 
 //Initialize btc price. Set monitor interval in minutes
-var btcprice_previous = 800;
+var btcprice_previous = 840;
 var Interval = 60;
 var t2 = setInterval(btctwitbot,Interval*60000);
 
@@ -41,13 +41,13 @@ res.on('end', function() {
     //Tweet btc price in case of high volatility
     if(btcprice/btcprice_previous<0.95 || btcprice/btcprice_previous>1.05)
     {
-	var tweettext = '#bitcoin volatility alert 1 bitcoin = '+btcprice+' USD';
+	var tweettext = '#bitcoin volatility alert 1 bitcoin = '+Math.round(btcprice*100)/100+' USD';
 	T.post('statuses/update', { status: tweettext }, function(err,reply) {});
     }
 
     // Status/debugger commands
     console.log(Date());
-    console.log('past btcprice = '+btcprice_previous+'\ncurrent btcprice = '+btcprice+'\n');
+    console.log('past btcprice = '+Math.round(btcprice_previous*100)/100+'\ncurrent btcprice = '+Math.round(btcprice*100)/100+'\n');
 
     // Set previous btc rate for next iteration
     btcprice_previous = btcprice;
